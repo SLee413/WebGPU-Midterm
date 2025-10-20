@@ -46,7 +46,7 @@ let upper  =  150.0;
 let left   = -150.0;
 let right  =  150.0;
 
-const nInstances = 1 + (2 * 10);     // 5 3d cubes
+const nInstances = 1 + (2 * 25);
 const IntanceData = [];
 
 let yaw = 0;
@@ -54,6 +54,7 @@ let pitch = 0;
 let eyeZ = 150;
 let aspect;
 let fov = 45;
+let moveRight = 0;
 
 // offsets to the various uniform values in float32 indices
 const kColorOffset = 0;
@@ -275,8 +276,6 @@ function geomSetUp()
      // Holder for 4 color values for rgba & 16 matrix values for 4x4 matrix
      const uniformValues = new Float32Array(uniformBufferSize / 4);
 
-     
-
      const colorValue = uniformValues.subarray(kColorOffset, kColorOffset + 4);
      const matrixValue = uniformValues.subarray(kMatrixOffset, kMatrixOffset + 16);
 
@@ -306,11 +305,8 @@ function geomSetUp()
    IntanceData[0].uniformValues.subarray(kColorOffset, kColorOffset + 4).set([0, 0.75, 0, 1]);
 
    // Add trees
-   for (let i = 0; i < 5; i++) {
-      createTree(1 + (i * 2), [-50 + (i * 60), 0, -50 + (Math.sin(i) * 50)])
-   }
-   for (let i = 0; i < 5; i++) {
-      createTree(1 + 10 + (i * 2), [-100 + (i * 60), 0, -100 + (Math.cos(i) * 50)])
+   for (let i = 0; i < 25; i++) {
+      createTree(1 + (i * 2), [(Math.random() * 500) - 250, 0, (Math.random() * 500) - 250])
    }
 
 
@@ -352,7 +348,7 @@ function render() {
 
       // Build View Matrix
       mat4.rotateZ(matrixValue, degToRad(180), matrixValue);
-      mat4.translate(matrixValue, [0, 0, -eyeZ], matrixValue);
+      mat4.translate(matrixValue, [moveRight, 0, -eyeZ], matrixValue);
       mat4.rotateY(matrixValue, degToRad(yaw), matrixValue);
       mat4.rotateX(matrixValue, degToRad(pitch), matrixValue);
 
@@ -381,16 +377,26 @@ window.addEventListener("keydown", dealWithKeyboard, false);
 // Functions that gets called to parse keydown events
 function dealWithKeyboard(e) {
     switch (e.keyCode) {
-       case 33: // pageup
+       case 65: // move left - a
             {
-               eyeZ -= 10.0;
+               moveRight -= 1;
             }
        break;
-       case 34: // pagedown
+       case 68: // move right - d
             {
-               eyeZ += 10.0;
+               moveRight += 1;
             }
        break;
+       case 87: // W - Move forward
+            {
+               eyeZ -= 1;
+            }
+        break;
+        case 83: // S - Move backward
+            {
+               eyeZ += 1;
+            }
+        break;
        case 37: // left arrow move left
             {
                 yaw -= 1.0;
